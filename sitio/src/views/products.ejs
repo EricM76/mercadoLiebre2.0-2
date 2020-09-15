@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+    <body>
+        <%- include('partials/header') %>
+            <div class="container">
+                <section class="listadoProductos">
+                    <div class="row productos">
+
+                        <div class="titulo col-12">
+                            <h2>
+                                <%= (productos.length != 0)? title: "Lo Lamentamos. No encontramos productos relacionados" %>
+                            </h2>
+                        </div>
+                        <% productos.forEach(producto => { %>
+
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+
+                                <div class="contenido">
+
+                                    <figure>
+                                        <a href="products/detail/<%= producto.id %> "><img src="/images/products/<%- producto.image %>  " alt=" ">
+                                </a>
+                                    </figure>
+
+                                    <article>
+                                        <h2>$
+                                            <%- (producto.price - producto.price * producto.discount / 100).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %>
+                                        </h2>
+                                        <% if (producto.discount != 0) { %>
+                                            <span><%- producto.discount %>% OFF</span>
+                                            <% } %>
+                                                <p>
+                                                    <%- producto.name %>
+                                                </p>
+                                                <i class="fas fa-truck "></i>
+                                    </article>
+                                </div>
+
+                            </div>
+
+                            <% }) %>
+                    </div>
+                </section>
+            </div>
+            
+            <% if (productos.length > 0) { %>
+                <%- include('partials/footer') %>
+            <% } %>
+
+    </body>
+
+</html>
