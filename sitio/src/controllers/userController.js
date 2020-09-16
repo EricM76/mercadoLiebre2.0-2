@@ -16,8 +16,7 @@ module.exports = {
     register:function(req,res){
         res.render('userRegister',{
             title:"Registro de usuario",
-            css:"register.css",
-            user: req.session.user
+            css:"register.css"
         })
     },
     processRegister:function(req,res){
@@ -58,8 +57,7 @@ module.exports = {
                 title: "Registro de usuario",
                 css:"index.css",
                 errors: errors.mapped(),
-                old:req.body,
-                user: req.session.user
+                old:req.body
 
             })
         }
@@ -67,8 +65,7 @@ module.exports = {
     login:function(req,res){
         res.render('userLogin',{
             title:"Ingresá a tu cuenta",
-            css:"index.css",
-            user: req.session.user
+            css:"index.css"
         })
     },
     processLogin: function(req,res){
@@ -91,6 +88,7 @@ module.exports = {
                 if(req.body.recordar){ //si viene tildada el checkbox creo la cookie
                     res.cookie('userMercadoLiebre',req.session.user, {maxAge:1000*60*5})
                 }
+                res.locals.user = req.session.user
                 res.redirect(url)
             });
         }else{
@@ -98,8 +96,7 @@ module.exports = {
                 title:"Ingresá a tu cuenta",
                 css:"index.css",
                 errors:errors.mapped(),
-                old:req.body,
-                user: req.session.user
+                old:req.body
             })
         }
       
@@ -110,8 +107,7 @@ module.exports = {
             css:"profile.css",
             productos: dbProductos.filter(producto => {
                 return producto.category != "visited" & producto.category != "in-sale"
-            }),
-            user: req.session.user
+            })
         })
     },
     logout:function(req,res){

@@ -11,8 +11,7 @@ module.exports = { //exporto un objeto literal con todos los metodos
         res.render('products', {
                 title: "Todos los Productos",
                 css:'index.css',
-                productos: dbProducts,
-                user: req.session.user
+                productos: dbProducts
             }) //muestra información de los productos
     },
     search: function(req, res) {
@@ -30,8 +29,7 @@ module.exports = { //exporto un objeto literal con todos los metodos
         res.render('products', {
             title: "Resultado de la búsqueda",
             productos: productos,
-            css:'index.css',
-            user: req.session.user
+            css:'index.css'
         })
     }else{
         return res.redirect('/')
@@ -47,8 +45,7 @@ module.exports = { //exporto un objeto literal con todos los metodos
                 title: "Detalle del Producto",
                 css:'product.css',
                 id: id,
-                producto: producto[0],
-                user: req.session.user
+                producto: producto[0]
             }) //muestra el detalle de un producto
     },
     agregar: function(req, res) {
@@ -63,8 +60,7 @@ module.exports = { //exporto un objeto literal con todos los metodos
                 css:'product.css',
                 categorias: dbCategories,
                 categoria: categoria,
-                sub: sub,
-                user: req.session.user
+                sub: sub
             }) //muestra el formulario para agregar un producto
     },
     publicar: function(req, res, next) {
@@ -112,7 +108,6 @@ module.exports = { //exporto un objeto literal con todos los metodos
         res.render('productShow', {
             title: "Ver / Editar Producto",
             css:'product.css',
-            user: req.session.user,
             total: dbProducts.length,
             producto: resultado[0],
             categorias: dbCategories,

@@ -7,6 +7,7 @@ var logger = require('morgan');
 const methodOverride = require('method-override'); //requiero el paquete Method Override para usar los metodos PUT, PATH y DELETE
 const session = require('express-session'); //requiero express-session
 
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -31,6 +32,7 @@ app.use(function(req,res,next){
     req.session.urlAnterior = req.originalUrl;
     next()
 })
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

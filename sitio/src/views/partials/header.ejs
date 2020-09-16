@@ -19,9 +19,9 @@
             </div>
 
             <div class="col-12 col-md-4 col-lg-4 d-flex justify-content-end align-items-center cuotas">
-                <a href=""><h5 class="mr-2"><%= (user)?user.nick:"Invitado" %> </h5></a>
-                <% if (user) { %>
-                    <a href=""><img src="/images/users/<%= user.avatar %> " alt="avatar" width="50px" height="50px" class="avatar"></a>
+                <a href=""><h5 class="mr-2"><%= (locals.user)?locals.user.nick:"Invitado" %> </h5></a>
+                <% if (locals.user) { %>
+                    <a href=""><img src="/images/users/<%= locals.user.avatar %> " alt="avatar" width="50px" height="50px" class="avatar"></a>
 
                 <% } else{%>
                 <a href=""><img src="/images/users/default.png" alt="" width="50px" height="50px"></a>
@@ -52,7 +52,7 @@
                 </ul>
 
                 <ul class="usuario navbar-nav">
-                    <% if (typeof user == "undefined") { %>
+                    <% if (typeof locals.user == "undefined") { %>
                         <li>
                             <a href="/users/login">Ingresá <i class="fas fa-sign-in-alt "></i></a>
                         </li>

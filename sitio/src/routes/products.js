@@ -16,9 +16,9 @@ const upImagesProducts = require('../middlewares/upImagesProducts'); //requiero 
 const sessionUserCheck = require('../middlewares/sessionUserCheck'); //chequeo si el usuario levantó sesión
 
 router.get('/', controller.listar) //construyo la ruta que me visualizará información de prueba
-router.get('/search', formSearch,controller.search); //añado una nueva ruta que se ocupe de la busqueda de productos
+router.get('/search',sessionUserCheck, formSearch,controller.search); //añado una nueva ruta que se ocupe de la busqueda de productos
 
-router.get('/detail/:id', controller.detalle) // añado la ruta para mostrar los detalles del producto
+router.get('/detail/:id',sessionUserCheck, controller.detalle) // añado la ruta para mostrar los detalles del producto
 
 
 router.get('/add',sessionUserCheck, controller.agregar) //añado la ruta para añadir un nuevo producto

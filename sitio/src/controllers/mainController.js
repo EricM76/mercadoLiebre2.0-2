@@ -14,8 +14,8 @@ module.exports = { //exporto un objeto literal con todos los metodos
             title: 'Mercado Liebre', //envío el objeto literal con la o las variables necesarias para renderizar de forma correcta el home
             css: 'index.css',
             ofertas: ofertas,
-            visitas: visitas,
-            user: req.session.user
+            visitas: visitas
+            //user: req.session.user
         })
     }
 
