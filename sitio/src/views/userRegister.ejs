@@ -43,6 +43,25 @@
 
                     </div>
 
+                
+                    <div class="form-row">
+                      <div class="form-group col-12 col-xl-6">
+                        <label for="email"></label>
+                        <input type="email"
+                        class="form-control <%= (typeof old != 'undefined' && old.email && !errors.email)?"is-valid":(typeof errors != 'undefined' && errors.email)?"is-invalid": ""  %>"
+                        id="email" value="<%= (typeof old != 'undefined' && old.email)?old.email:'' %>" placeholder="email" name="email"/>
+                        <small class="text-danger"><%= (typeof errors != 'undefined' && errors.email)?errors.email.msg: "" %> </small>
+                      </div>
+
+                      <div class="form-group col-12 col-xl-6">
+                        <div class="custom-file mt-4">
+                          <input type="file" class="custom-file-input " id="customFileLang" lang="en" name="avatar">
+                          <label class="custom-file-label" for="customFileLang">Imagen de perfil</label>
+                          <small class="text-danger"><%= (typeof errorFormato != 'undefined')?errorFormato: "" %> </small>
+                        </div>
+                      </div>
+
+                    </div>
                     <div class="form-row">
                       <div class="form-group col-12 col-xl-6">
                         <label for="pass"></label>
@@ -63,24 +82,6 @@
 
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-12 col-xl-6">
-                        <label for="email"></label>
-                        <input type="email"
-                        class="form-control <%= (typeof old != 'undefined' && old.email && !errors.email)?"is-valid":(typeof errors != 'undefined' && errors.email)?"is-invalid": ""  %>"
-                        id="email" value="<%= (typeof old != 'undefined' && old.email)?old.email:'' %>" placeholder="email" name="email"/>
-                        <small class="text-danger"><%= (typeof errors != 'undefined' && errors.email)?errors.email.msg: "" %> </small>
-                      </div>
-
-                      <div class="form-group col-12 col-xl-6">
-                        <div class="custom-file mt-4">
-                          <input type="file" class="custom-file-input " id="customFileLang" lang="es" name="avatar">
-                          <label class="custom-file-label" for="customFileLang">Seleccionar Archivo</label>
-                          <small class="text-danger"><%= (typeof errorFormato != 'undefined')?errorFormato: "" %> </small>
-                        </div>
-                      </div>
-
-                    </div>
-                    <div class="form-row">
                       <div class="col-12 col-lg-6 mt-2">
                         <div class="custom-control custom-checkbox">
                           <input type="checkbox" class="custom-control-input <%= (typeof old != 'undefined' && old.bases)?"is-valid":(typeof errors != 'undefined' && errors.bases)?"is-invalid": ""  %>" id="customCheck1" name="bases">
@@ -97,6 +98,7 @@
                         </div>
 
                     </div>
+                    
                     </div>
                   </form>
                 </div>

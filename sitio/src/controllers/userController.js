@@ -1,7 +1,9 @@
 /************ BASES DE DATOS ************/
 
 let dbProductos = require('../data/database'); //JSON parseado de productos
-let dbUsers = require('../data/dbUsers');
+let dbUsers = require('../data/dbUsers'); //JSON parseado de usuarios
+
+const db = require('../database/models')
 
 /*************** MODULOS ****************/
 
@@ -9,7 +11,6 @@ const {validationResult} = require('express-validator'); //requiero validationRe
 const bcrypt =require('bcrypt');
 const fs = require('fs');
 const path = require('path');
-const upload = require('../middlewares/upAvatares');
 
 module.exports = {
     register:function(req,res){
@@ -20,7 +21,13 @@ module.exports = {
         })
     },
     processRegister:function(req,res){
-
+        db.Users.findAll()
+        .then(response =>{
+            console.log(response)
+        })
+        .catch(err =>{
+            res.send(err)
+        })
         let errors = validationResult(req); //cargo los errores, si los hubiera
         let lastID = 1;
         dbUsers.forEach(user=>{
