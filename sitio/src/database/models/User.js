@@ -9,16 +9,27 @@ module.exports = (sequelize, dataTypes) => {
         },
         nombre:{
             type:dataTypes.STRING(45),
-            allowNull:false
+            allowNull:false,
+            validate: {
+                isAlpha:{
+                    args:true,
+                    msg:"El nombre solo puede contener letras"
+                }
+            }
         },
         apellido:{
             type:dataTypes.STRING(45),
-            allowNull:false
+            allowNull:false,
+            validate: {
+                isAlpha:{
+                    msg:"El apellido solo puede contener letras"
+                }
+            }
         },
         email:{
             type:dataTypes.STRING(45),
             allowNull:false,
-            unique:true
+            unique:true,
         },
         password:{
             type:dataTypes.STRING(100),
@@ -45,7 +56,8 @@ module.exports = (sequelize, dataTypes) => {
     }
     let config = {
         tableName: "users",
-        timestamps: true
+        timestamps: true,
+        underscored:true
     }
     const User = sequelize.define(alias,cols,config);
 
