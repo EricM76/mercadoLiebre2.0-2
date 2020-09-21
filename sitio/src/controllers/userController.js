@@ -7,11 +7,10 @@ const db = require('../database/models')
 
 /*************** MODULOS ****************/
 
-const {validationResult} = require('express-validator'); //requiero validationResult de expres-validator
+const {validationResult, body} = require('express-validator'); //requiero validationResult de expres-validator
 const bcrypt =require('bcrypt');
 const fs = require('fs');
 const path = require('path');
-const { error } = require('console');
 
 module.exports = {
     register:function(req,res){
@@ -119,7 +118,7 @@ module.exports = {
         let errors = validationResult(req);
         if(errors.isEmpty()){
          
-            dbUsers.forEach(user => {
+         /*    dbUsers.forEach(user => {
                 if(user.email == req.body.email){
                     req.session.user = {
                         id: user.id,
@@ -133,7 +132,28 @@ module.exports = {
                 }
                 res.locals.user = req.session.user
                 res.redirect(url)
-            });
+            }); */
+
+            db.Users.findOne({ //busco el usuario usando el mail ingresado 
+                where:{
+                    email:req.body.email
+                }
+            })
+            .then(user => {
+                req.session.user = { //asigno a la session un objeto literal con los datos del usuario
+                    id: user.id,
+                    nick: user.nombre + " " + user.apellido,
+                    email: user.email,
+                    avatar: user.avatar,
+                    rol: user.rol
+                }
+                if(req.body.recordar){ //si viene tildada el checkbox creo la cookie
+                    res.cookie('userMercadoLiebre',req.session.user, {maxAge:1000*60*5})
+                }
+                res.locals.user = req.session.user //asigno session a la variable locals
+                return res.redirect(url)
+            })
+
         }else{
             res.render('userLogin',{
                 title:"Ingresá a tu cuenta",
@@ -145,13 +165,59 @@ module.exports = {
       
     },
     profile: function(req, res) {
-        res.render('userProfile', {
+        if(req.session.user){
+            db.Users.findByPk(req.session.user.id)
+            .then(user => {
+                console.log(user)
+                res.render('userProfile', {
+                    title: "Perfil de usuario",
+                    css:"profile.css",
+                    usuario:user,
+                    productos: dbProductos.filter(producto => {
+                        return producto.category != "visited" & producto.category != "in-sale"
+                    })
+                })
+            })
+        }else{
+            res.redirect('/')
+        }
+      
+       /*  res.render('userProfile', {
             title: "Perfil de usuario",
             css:"profile.css",
             productos: dbProductos.filter(producto => {
                 return producto.category != "visited" & producto.category != "in-sale"
             })
+        }) */
+    },
+    updateProfile:function(req,res){
+        if(req.files[0]){
+            if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))){
+                fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
+                res.locals.user.avatar = req.files[0].filename
+            }
+           
+        }
+        db.Users.update(
+            {
+                fecha: req.body.fecha,
+                avatar:(req.files[0])?req.files[0].filename:req.session.user.avatar,
+                direccion: req.body.direccion.trim(),
+                ciudad:req.body.ciudad.trim(),
+                provincia:req.body.provincia.trim()
+            },
+            {
+                where:{
+                    id:req.params.id
+                }
+            }
+        )
+        .catch(err => {
+            console.log(err)
         })
+       
+        return res.redirect('/users/profile')
+
     },
     logout:function(req,res){
         req.session.destroy(); //elimino la sesion
@@ -159,5 +225,22 @@ module.exports = {
             res.cookie('userMercadoLiebre','',{maxAge:-1}); //borro la cookie
         }
         return res.redirect('/')
+    },
+    delete:function(req,res){
+        console.log("borrando usuario...")
+        if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))){
+            fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
+        }
+        req.session.destroy(); //elimino la sesion
+        if(req.cookies.userMercadoLiebre){ //chequeo que la cookie exista
+            res.cookie('userMercadoLiebre','',{maxAge:-1}); //borro la cookie
+        }
+        db.Users.destroy({
+            where:{
+                id:req.params.id
+            }
+        })
+        return res.redirect('/')
+    
     }
 }

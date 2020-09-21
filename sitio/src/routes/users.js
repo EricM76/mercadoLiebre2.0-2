@@ -26,6 +26,8 @@ router.get('/login', controller.login); //formulario de logueo
 router.post('/login',loginValidator,controller.processLogin) //derivo al método que procesará el login
 
 router.get('/profile', controller.profile); //vista de perfil de usuario
+router.put('/updateProfile/:id',upAvatares.any(),controller.updateProfile) //actualizar datos
+router.delete('/delete/:id',controller.delete) //borrar el usuario
 
 router.get('/logout',controller.logout);
 

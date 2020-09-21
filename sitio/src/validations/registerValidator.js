@@ -33,8 +33,8 @@ module.exports = [
                 email:value
             }
             })
-            .then(result => {
-                if(result){
+            .then(user => {
+                if(user){
                     return Promise.reject('Este mail ya está registrado')
                 }
             })

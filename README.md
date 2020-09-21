@@ -86,18 +86,20 @@ Sequelize: es un ORM (Objet Relational Mapping o Mapeo Objeto-Relacional) para N
 		}
 
 - El método _define()_ recibe tres parámetros:
-	- El alias de la tabla (el plural del modelo),
-	- Las columnas que la componen, la mismas se pasan en como un objeto literal cuyas propiedades corresponden al nombre de cada una de ellas, recibiendo como valor otro objeto literal con cuyas propiedades son el tipo de datos y las restricciones que esta tenga, y por último
-	- La configuración del Modelo, que es un objeto literal que por lo menos lleva dos propiedades: el _nombre_ de la tabla, que si el nombre del archivo está en ingles, sequelize infiere que la tabla es el plural del mismo y si es así no sería necesario definirlo y la configuración de los **_timestamps_** que si estos campos no estuviesen en la tabla, debe darle el valor **_false_**
+	- El **alias (_alias_)** de la tabla (el plural del modelo),
+	- Las **columnas (_cols_)** que la componen, la mismas se pasan en como un objeto literal cuyas propiedades corresponden al nombre de cada una de ellas, recibiendo como valor otro objeto literal con cuyas propiedades son el tipo de datos y las restricciones que esta tenga, y por último
+	- La **configuración (_config_)** del Modelo, que es un objeto literal que por lo menos lleva dos propiedades: 
+		- el _nombre_ de la tabla, que si el nombre del archivo está en ingles, sequelize infiere que la tabla es el plural del mismo y si es así no sería necesario definirlo,
+		- la configuración de los **_timestamps_** que si estos campos no estuviesen en la tabla, debe darle el valor **_false_**
 
-- Es una buena práctica  declarar en variables dichos parámetros para luego usarlos cuando se defina la constante.Así quedaría el modelo completo:
+- Es una buena práctica  declarar en variables dichos parámetros para luego usarlos cuando se defina la constante que se exportará del modelo.Así quedaría el modelo de _Usuarios (User.js)_ completo:
 
 		module.exports = (sequelize, dataTypes) => {
 		    let alias = "Users";
 		    let cols = {
 		        id:{
 		            type:dataTypes.INTEGER(11),
-		            allowNull:false, //permite nulo?
+		            allowNull:false,
 		            autoIncrement: true,
 		            primaryKey:true
 		        },
@@ -146,4 +148,105 @@ Sequelize: es un ORM (Objet Relational Mapping o Mapeo Objeto-Relacional) para N
 			const User = sequelize.define(alias,cols,config);
 		
 		    return User;
+		}
+
+Modelo de Productos (Products.js):
+
+		    module.exports = (sequelize,dataTypes) => {
+		    let alias = "Products";
+		    let cols = {
+		        id:{
+		            type:dataTypes.INTEGER(11),
+		            allowNull:false, //permite nulo?
+		            autoIncrement: true,
+		            primaryKey:true
+		        },
+		        nombre:{
+		            type:dataTypes.STRING(100),
+		            allowNull:false
+		        },
+		        precio:{
+		            type:dataTypes.INTEGER(11),
+		            allowNull:false
+		        },
+		        descuento:{
+		            type:dataTypes.INTEGER(11),
+		            allowNull:false
+		        },
+		        descripcion:{
+		            type:dataTypes.STRING(300),
+		            allowNull:false
+		        },
+		        imagenes:{
+		            type:dataTypes.STRING(100),
+		            allowNull:false
+		        }
+		    }
+		
+		    let config = {
+		        tableName : "products",
+		        timestamps: true,
+		        underscored: true
+		    }
+		
+		    const Product = sequelize.define(alias,cols,config);
+		
+		    return Product;
+		}
+
+Modelo de Categorias (Category.js):
+
+		    module.exports = (sequelize, dataTypes) => {
+		    let alias = "Categories";
+		    let cols = {
+		        id:{
+		            type:dataTypes.INTEGER(11),
+		            allowNull:false, 
+		            autoIncrement: true,
+		            primaryKey:true
+		        },
+		        nombre:{
+		            type:dataTypes.STRING(45),
+		            allowNull:false
+		        },
+		        imagen:{
+		            type:dataTypes.STRING(45),
+		            allowNull:false
+		        }
+		    }
+		    let config = {
+		        tablaName: "categories",
+		        timestamps:false
+		    }
+		    const Categorie = sequelize.define(alias,cols,config);
+		
+		    return Categorie;
+		}
+
+Modelo de Tiendas (Store.js)
+
+		    module.exports = (sequelize, dataTypes) => {
+		    let alias = "Stores";
+		    let cols = {
+		        id:{
+		            type:dataTypes.INTEGER(11),
+		            allowNull:false,
+		            autoIncrement: true,
+		            primaryKey:true
+		        },
+		        nombre:{
+		            type:dataTypes.STRING(45),
+		            allowNull:false
+		        },
+		        imagen:{
+		            type:dataTypes.STRING(45)
+		        }
+		    }
+		    let config = {
+		        tablaName: "categories",
+		        timestamps:false
+		    }
+		    const Store = sequelize.define(alias,cols,config);
+		
+		    return Store;
 		}
