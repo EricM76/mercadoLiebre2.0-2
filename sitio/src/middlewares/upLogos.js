@@ -3,7 +3,7 @@ const multer = require('multer'); //requiero el paquete de multer para manejar a
 
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, 'public/images/users')
+        callback(null, 'public/images/logos')
     },
     filename: (req, file, callback) => {
         req.fileSave = file.fieldname + '-' + Date.now() + path.extname(file.originalname)

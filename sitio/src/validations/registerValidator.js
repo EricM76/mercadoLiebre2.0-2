@@ -39,9 +39,10 @@ module.exports = [
                 }
             })
     }),
-    check('pass')
-    .notEmpty()
-    .withMessage("Debes ingresar una contraseña"),
+
+    check('email')
+    .isEmail()
+    .withMessage("Debes ingresar un email válido"),
 
     check('pass')
     .isLength({
@@ -61,5 +62,15 @@ module.exports = [
 
     check('bases')
     .isString("on")
-    .withMessage("Debe aceptar las bases y condiciones")
+    .withMessage("Debe aceptar las bases y condiciones"),
+
+    body('avatar')
+    .custom((value,{req})=>{
+        if(req.fileValidationError){
+            return false
+        }else{
+            return true
+        }
+    })
+    .withMessage("Solo se permite png, jpg, jpeg, gif")
 ]

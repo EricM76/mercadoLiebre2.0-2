@@ -14,13 +14,14 @@ const path = require('path');
 
 module.exports = {
     register:function(req,res){
+        console.log(req.session.store)
         res.render('userRegister',{
             title:"Registro de usuario",
             css:"register.css"
         })
     },
     processRegister:function(req,res){
-    
+
         /*************** SEQUELIZE ****************/
         /*******************************************/
 
@@ -33,11 +34,11 @@ module.exports = {
             }
         })
         -------------------------------------*/
-     
+
         if(errors.isEmpty()){
-        
+
             /* ----------------------------------------------------> obsoleto
-            let nuevoUsuario = { 
+            let nuevoUsuario = {
                 id:lastID+1,
                 nombre:req.body.nombre,
                 apellido:req.body.apellido,
@@ -60,11 +61,15 @@ module.exports = {
                 apellido:req.body.apellido.trim(),
                 email:req.body.email.trim(),
                 password:bcrypt.hashSync(req.body.pass.trim(),10),
-                avatar:(req.files[0])?req.files[0].filename:null,
-                rol:"user"
+                avatar:(req.files[0])?req.files[0].filename:"default.png",
+                rol:(req.session.store)?req.session.store:"user"
             })
             .then(result => {
                 console.log(result)
+                if(req.session.store){
+                    req.session.store = result
+                    return res.redirect('/stores/register')
+                }
                 return res.redirect('/users/login')
             })
             .catch(errores => {
@@ -96,6 +101,7 @@ module.exports = {
             })
         }
         else{
+            (req.fileSave)?fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.fileSave)):"";
              res.render('userRegister',{
                 title: "Registro de usuario",
                 css:"index.css",
@@ -117,7 +123,7 @@ module.exports = {
         }
         let errors = validationResult(req);
         if(errors.isEmpty()){
-         
+
          /*    dbUsers.forEach(user => {
                 if(user.email == req.body.email){
                     req.session.user = {
@@ -134,7 +140,7 @@ module.exports = {
                 res.redirect(url)
             }); */
 
-            db.Users.findOne({ //busco el usuario usando el mail ingresado 
+            db.Users.findOne({ //busco el usuario usando el mail ingresado
                 where:{
                     email:req.body.email
                 }
@@ -162,7 +168,7 @@ module.exports = {
                 old:req.body
             })
         }
-      
+
     },
     profile: function(req, res) {
         if(req.session.user){
@@ -181,7 +187,7 @@ module.exports = {
         }else{
             res.redirect('/')
         }
-      
+
        /*  res.render('userProfile', {
             title: "Perfil de usuario",
             css:"profile.css",
@@ -196,7 +202,7 @@ module.exports = {
                 fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
                 res.locals.user.avatar = req.files[0].filename
             }
-           
+
         }
         db.Users.update(
             {
@@ -215,7 +221,7 @@ module.exports = {
         .catch(err => {
             console.log(err)
         })
-       
+
         return res.redirect('/users/profile')
 
     },
@@ -228,7 +234,7 @@ module.exports = {
     },
     delete:function(req,res){
         console.log("borrando usuario...")
-        if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))){
+        if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar)) && req.session.user.avatar != "default.png" && req.session.user.avatar != "store.jpg"){
             fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
         }
         req.session.destroy(); //elimino la sesion
@@ -241,6 +247,6 @@ module.exports = {
             }
         })
         return res.redirect('/')
-    
+
     }
 }
