@@ -60,6 +60,12 @@ module.exports = (sequelize, dataTypes) => {
         underscored:true
     }
     const User = sequelize.define(alias,cols,config);
-   
+    User.associate = function(models){
+        User.hasOne(models.Stores,{
+            as:"tienda",
+            foreignKey:"id_usuario"
+        })
+
+    }
     return User;
 }

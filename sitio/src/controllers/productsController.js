@@ -5,14 +5,39 @@ const dbProducts = require('../data/database') //requiero la base de datos de pr
 const dbCategories = require('../data/db_categories'); //requiero las categorias
 
 const {validationResult} = require('express-validator');
+const db = require('../database/models');
 
 module.exports = { //exporto un objeto literal con todos los metodos
     listar: function(req, res) {
-        res.render('products', {
+        /* res.render('products', {
                 title: "Todos los Productos",
                 css:'index.css',
                 productos: dbProducts
-            }) //muestra información de los productos
+            }) //muestra información de los productos */
+
+            db.Stores.findOne({
+                where:{
+                    id_usuario:req.session.user.id
+                }
+                })
+                .then(tienda => {
+                    console.log(tienda)
+                    db.Products.findAll({
+                        where:{
+                            id_tienda:tienda.dataValues.id
+                        }
+                    })
+                    .then(result => {
+                        res.send(result)
+                    })
+                    .catch(error => {
+                        res.send(error)
+                    })
+                })
+                .catch(error => {
+                    res.send(error)
+                })
+           
     },
     search: function(req, res) {
   
@@ -49,7 +74,7 @@ module.exports = { //exporto un objeto literal con todos los metodos
             }) //muestra el detalle de un producto
     },
     agregar: function(req, res) {
-        let categoria;
+      /*   let categoria;
         let sub;
         if (req.query.categoria) {
             categoria = req.query.categoria;
@@ -61,10 +86,18 @@ module.exports = { //exporto un objeto literal con todos los metodos
                 categorias: dbCategories,
                 categoria: categoria,
                 sub: sub
-            }) //muestra el formulario para agregar un producto
+            })  */
+            db.Categories.findAll()
+            .then(categorias => {
+                res.render('productAdd', {
+                    title: "Agregar Producto",
+                    css:'product.css',
+                    categorias: categorias
+                }) 
+            })
     },
     publicar: function(req, res, next) {
-        let lastID = 1;
+       /*  let lastID = 1;
         dbProducts.forEach(producto => {
             if (producto.id > lastID) {
                 lastID = producto.id
@@ -81,7 +114,36 @@ module.exports = { //exporto un objeto literal con todos los metodos
         }
         dbProducts.push(newProduct)
         fs.writeFileSync(path.join(__dirname, "..", "data", "productsDataBase.json"), JSON.stringify(dbProducts), 'utf-8')
-        res.redirect('/products')
+        res.redirect('/products') */
+        db.Users.findOne({
+            where:{
+                id:req.session.user.id
+            },
+            include:[{association: "store"}]
+        })
+        .then(user => {
+            console.log(user)
+            db.Products.create({
+                nombre:req.body.nombre.trim(),
+                precio:Number(req.body.precio),
+                descuento:Number(req.body.descuento),
+                descripcion:req.body.descripcion,
+                imagenes:req.files[0].filename,
+                id_tienda:user.store.id,
+                id_categoria:Number(req.body.categoria)
+            })
+            .then(result => {
+                console.log(result)
+                res.redirect('/')
+            })
+            .catch(err => {
+                res.send(err)
+            })
+        })
+        .catch(err => {
+            res.send(err)
+        })
+      
     },
     show: function(req, res) {
         let idProducto = req.params.id;

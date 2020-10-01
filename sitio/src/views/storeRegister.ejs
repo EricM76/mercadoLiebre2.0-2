@@ -48,7 +48,7 @@
                         <label for="nombre"></label>
                         <input type="text"
                         class="form-control <%= (typeof old != 'undefined' && old.nombre)?"is-valid":(typeof errors != 'undefined' && errors.nombre)?"is-invalid": ""  %>"
-                        id="nombre"  name="nombre"  value="<%= usuario.nombre %>" placeholder="nombre" disabled/>
+                        id="nombre"  name="nombre"  value="" placeholder="nombre"/>
                         <small class="text-danger"><%= (typeof errors != 'undefined' && errors.nombre)?errors.nombre.msg: "" %> </small>
                       </div>
 
@@ -56,7 +56,7 @@
                         <label for="apellido"></label>
                         <input type="text"
                         class="form-control <%= (typeof old != 'undefined' && old.apellido)?"is-valid":(typeof errors != 'undefined' && errors.apellido)?"is-invalid": ""  %>"
-                        id="apellido" value="<%= usuario.apellido %>" placeholder="apellido" name="apellido" disabled/>
+                        id="apellido" value="" placeholder="apellido" name="apellido"/>
                         <small class="text-danger"><%= (typeof errors != 'undefined' && errors.apellido)?errors.apellido.msg: "" %> </small>
                       </div>
 
@@ -68,7 +68,7 @@
                         <label for="email"></label>
                         <input type="email"
                         class="form-control <%= (typeof old != 'undefined' && old.email && !errors.email)?"is-valid":(typeof errors != 'undefined' && errors.email)?"is-invalid": ""  %> "
-                        id="email" value="<%= usuario.email %>" placeholder="email" name="email" disabled/>
+                        id="email" value="" placeholder="email" name="email"/>
                         <small class="text-danger"><%= (typeof errors != 'undefined' && errors.email)?errors.email.msg: "" %> </small>
                       </div>
 
@@ -76,7 +76,7 @@
                         <label for="pass"></label>
                         <input type="password"
                         class="form-control <%= (typeof errors != 'undefined' && errors.pass)?"is-invalid": ""  %>"
-                        id="pass" value="<%= usuario.password %> " placeholder="contraseña" name="pass" disabled/>
+                        id="pass" value="" placeholder="contraseña" name="pass"/>
                         <small class="text-danger"><%= (typeof errors != 'undefined' && errors.pass)?errors.pass.msg: "" %> </small>
                       </div>
                     
@@ -100,7 +100,6 @@
                             Registrarse
                           </button>
                         </div>
-
                     </div>
                   </div>
                     

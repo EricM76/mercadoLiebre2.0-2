@@ -11,50 +11,21 @@ const {validationResult, body} = require('express-validator'); //requiero valida
 const bcrypt =require('bcrypt');
 const fs = require('fs');
 const path = require('path');
+const e = require('express');
 
 module.exports = {
     register:function(req,res){
         console.log(req.session.store)
         res.render('userRegister',{
-            title:"Registro de usuario",
+            title:(req.session.store)?"Registro de responsable de la Tienda":"Registro de usuario",
             css:"register.css"
         })
     },
     processRegister:function(req,res){
 
-        /*************** SEQUELIZE ****************/
-        /*******************************************/
-
         let errors = validationResult(req); //cargo los errores, si los hubiera
-        /* -------------------------> obsoleto
-        let lastID = 1;
-        dbUsers.forEach(user=>{
-            if(user.id > lastID){
-                lastID = user.id
-            }
-        })
-        -------------------------------------*/
-
-        if(errors.isEmpty()){
-
-            /* ----------------------------------------------------> obsoleto
-            let nuevoUsuario = {
-                id:lastID+1,
-                nombre:req.body.nombre,
-                apellido:req.body.apellido,
-                email:req.body.email,
-                avatar:(req.files)?req.files[0].filename:null,
-                pass:bcrypt.hashSync(req.body.pass,10),
-                rol:"user"
-            }
-            dbUsers.push(nuevoUsuario);
-            dbUsers.sort(function(a,b){ //ordeno los usuarios por id
-                return ((a.id<b.id)?-1:(a.id>b.id)?1:0)
-            })
-
-            fs.writeFileSync(path.join(__dirname,'..','data','dbUsers.json'),JSON.stringify(dbUsers),'utf-8')
-            return res.redirect('/users/login')
-            ----------------------------------------------------------------*/
+       
+        if(errors.isEmpty()){       
 
             db.Users.create({
                 nombre:req.body.nombre.trim(),
@@ -66,10 +37,6 @@ module.exports = {
             })
             .then(result => {
                 console.log(result)
-                if(req.session.store){
-                    req.session.store = result
-                    return res.redirect('/stores/register')
-                }
                 return res.redirect('/users/login')
             })
             .catch(errores => {
@@ -124,33 +91,18 @@ module.exports = {
         let errors = validationResult(req);
         if(errors.isEmpty()){
 
-         /*    dbUsers.forEach(user => {
-                if(user.email == req.body.email){
-                    req.session.user = {
-                        id: user.id,
-                        nick: user.nombre + " " + user.apellido,
-                        email: user.email,
-                        avatar: user.avatar
-                    }
-                }
-                if(req.body.recordar){ //si viene tildada el checkbox creo la cookie
-                    res.cookie('userMercadoLiebre',req.session.user, {maxAge:1000*60*5})
-                }
-                res.locals.user = req.session.user
-                res.redirect(url)
-            }); */
-
             db.Users.findOne({ //busco el usuario usando el mail ingresado
                 where:{
                     email:req.body.email
-                }
+                },
+                include:[{association:"tienda"}] //incluyo la asocciacion para que me traiga tambien la tienda de la cual el usuario es responsable
             })
             .then(user => {
                 req.session.user = { //asigno a la session un objeto literal con los datos del usuario
                     id: user.id,
                     nick: user.nombre + " " + user.apellido,
                     email: user.email,
-                    avatar: user.avatar,
+                    avatar: (user.rol == "store")?user.tienda.logo:user.avatar, //si el usuario tiene rol tienda, la imagen de perfil será el logo de la tienda
                     rol: user.rol
                 }
                 if(req.body.recordar){ //si viene tildada el checkbox creo la cookie
@@ -158,6 +110,9 @@ module.exports = {
                 }
                 res.locals.user = req.session.user //asigno session a la variable locals
                 return res.redirect(url)
+            })
+            .catch(error => {
+                res.send(error)
             })
 
         }else{
@@ -187,14 +142,6 @@ module.exports = {
         }else{
             res.redirect('/')
         }
-
-       /*  res.render('userProfile', {
-            title: "Perfil de usuario",
-            css:"profile.css",
-            productos: dbProductos.filter(producto => {
-                return producto.category != "visited" & producto.category != "in-sale"
-            })
-        }) */
     },
     updateProfile:function(req,res){
         if(req.files[0]){
@@ -218,11 +165,14 @@ module.exports = {
                 }
             }
         )
+        .then( result => {
+          console.log(req.session.user)
+
+          return res.redirect('/users/profile')
+          })
         .catch(err => {
             console.log(err)
         })
-
-        return res.redirect('/users/profile')
 
     },
     logout:function(req,res){
@@ -233,20 +183,53 @@ module.exports = {
         return res.redirect('/')
     },
     delete:function(req,res){
-        console.log("borrando usuario...")
-        if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar)) && req.session.user.avatar != "default.png" && req.session.user.avatar != "store.jpg"){
-            fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
-        }
-        req.session.destroy(); //elimino la sesion
-        if(req.cookies.userMercadoLiebre){ //chequeo que la cookie exista
-            res.cookie('userMercadoLiebre','',{maxAge:-1}); //borro la cookie
-        }
-        db.Users.destroy({
-            where:{
-                id:req.params.id
+        if(req.session.user.rol == "store"){
+            db.Stores.findOne({
+                where:{
+                    id_usuario:Number(req.session.user.id)
+                }
+            })
+            .then(result => {
+                db.Stores.destroy({
+                    where:{
+                        id:result.dataValues.id
+                    }
+                })
+                .then(result => {
+                    console.log("tienda borrada")
+                    if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar)) && req.session.user.avatar != "default.png" && req.session.user.avatar != "store.jpg"){
+                        fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
+                    }
+                    req.session.destroy(); //elimino la sesion
+                    if(req.cookies.userMercadoLiebre){ //chequeo que la cookie exista
+                        res.cookie('userMercadoLiebre','',{maxAge:-1}); //borro la cookie
+                    }
+                    db.Users.destroy({
+                        where:{
+                            id:req.params.id
+                        }
+                    })
+                    return res.redirect('/')
+                })
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }else{
+            console.log("borrando usuario...")
+            if(fs.existsSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar)) && req.session.user.avatar != "default.png" && req.session.user.avatar != "store.jpg"){
+                fs.unlinkSync(path.join(__dirname,'../../public/images/users/'+req.session.user.avatar))
             }
-        })
-        return res.redirect('/')
-
+            req.session.destroy(); //elimino la sesion
+            if(req.cookies.userMercadoLiebre){ //chequeo que la cookie exista
+                res.cookie('userMercadoLiebre','',{maxAge:-1}); //borro la cookie
+            }
+            db.Users.destroy({
+                where:{
+                    id:req.params.id
+                }
+            })
+            return res.redirect('/')
+        }
     }
 }

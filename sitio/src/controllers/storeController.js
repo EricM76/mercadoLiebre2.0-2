@@ -9,44 +9,52 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
-    preRegister:function(req,res){
-      req.session.store = "store";
-      res.redirect('/users/register')
-    },
     register:function(req,res){
       res.render('storeRegister',{
-        title:"Registro de usuario",
+        title:"Registro de Tienda",
         css:"register.css",
         usuario:req.session.store
       })
     },
     processRegister: (req,res) => {
-      console.log(req.session.store)
-      db.Stores.create({
-        nombre:req.body.nameStore.trim(),
-        imagen:(req.files[0])?req.files[0].filename:"store.jpg",
-        id_usuario:req.session.store.id
+      db.Users.create({
+        nombre:req.body.nombre.trim(),
+        apellido:req.body.apellido.trim(),
+        email:req.body.email.trim(),
+        password:bcrypt.hashSync(req.body.pass.trim(),10),
+        avatar:(req.files[0])?req.files[0].filename:"store.png",
+        rol:"store"
     })
-    .then(result => {
-        console.log(result)
-        req.session.destroy()
-        return res.redirect('/users/login')
+    .then(user => {
+        console.log(user)
+        db.Stores.create({
+          nombre:req.body.nameStore.trim(),
+          logo:(req.files[0])?req.files[0].filename:"store.png",
+          id_usuario:user.id
+        })
+        .then(result => {
+            console.log(result)
+            return res.redirect('/users/login')
+        })
+        .catch(errores => {
+          res.send(errores)
+        })
     })
     .catch(errores => {
-      console.log(errores)
+      res.send(errores)
     })
+     
   },
   list:function(req,res){
     db.Stores.findAll({
       include:[{association: "responsable"}]
-
     }
     )
     .then(tiendas => {
       res.send(tiendas)
     })
     .catch(err => {
-      console.log(err)
+      res.send(err)
     })
   }
 }

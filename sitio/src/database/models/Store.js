@@ -11,7 +11,7 @@ module.exports = (sequelize, dataTypes) => {
             type:dataTypes.STRING(45),
             allowNull:false
         },
-        imagen:{
+        logo:{
             type:dataTypes.STRING(45)
         },
         id_usuario:{
@@ -21,21 +21,20 @@ module.exports = (sequelize, dataTypes) => {
     }
     let config = {
         tablaName: "stores",
-        timestamps:false
+        timestamps:true,
+        underscored:true
     }
     let Store = sequelize.define(alias,cols,config);
 
-    Store.associtate = function(models){
+    Store.associate = function(models){
         Store.belongsTo(models.Users,{
             as:"responsable",
             foreignKey:"id_usuario"
         })
-        Store.belongsToMany(models.Products,{
+        Store.hasMany(models.Products,{
             as:"productos",
-            through:"store_product",
-            foreingKey:"id_store",
-            otherKey:"id_product",
-            timestamps:false
+            foreingKey:"id_tienda"
+            
         })
     }
 

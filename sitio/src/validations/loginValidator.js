@@ -15,17 +15,10 @@ module.exports = [
     })
     .withMessage('Escribe tu contraseña'),
     
-    body('email')
+   /* body('email')
     .custom(function(value){
-    /*  let usuario = dbUsers.filter(user=>{
-         return user.email == value
-     })
-     if(usuario == false){
-         return false
-     }else{
-         return true
-     } */
-     return db.Users.findOne({
+    
+    return db.Users.findOne({
          where:{
              email:value
          }
@@ -35,8 +28,7 @@ module.exports = [
              return Promise.reject('Email no registrado')
          }
      })
-    }),
-    //.withMessage('El usuario no está registrado'),
+    }), */
 
     body('pass')
     .custom((value,{req})=>{
@@ -60,11 +52,11 @@ module.exports = [
         })
         .then(user => {
             if(!bcrypt.compareSync(value,user.dataValues.password)){ //si no machea la contraseña
-                return Promise.reject()
+                return Promise.reject('estas mal')
             }
         })
         .catch(() => {
-            return Promise.reject('Contraseña incorrecta')
+            return Promise.reject('Credenciales inválidas')
         })
     })
     //.withMessage('Contraseña incorrecta')

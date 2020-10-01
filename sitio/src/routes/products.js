@@ -15,16 +15,14 @@ const formSearch = require('../validations/formSearch'); //valido que lo que lle
 const upImagesProducts = require('../middlewares/upImagesProducts'); //requiero el modulo que se encarga de guardar las imagenes, vía multer
 const sessionUserCheck = require('../middlewares/sessionUserCheck'); //chequeo si el usuario levantó sesión
 
-router.get('/', controller.listar) //construyo la ruta que me visualizará información de prueba
+router.get('/list', controller.listar) //construyo la ruta que me visualizará información de prueba
 router.get('/search',sessionUserCheck, formSearch,controller.search); //añado una nueva ruta que se ocupe de la busqueda de productos
 
 router.get('/detail/:id',sessionUserCheck, controller.detalle) // añado la ruta para mostrar los detalles del producto
 
 
-router.get('/add',sessionUserCheck, controller.agregar) //añado la ruta para añadir un nuevo producto
-router.get('/add/form',controller.agregar) //añado la ruta para mostrar el formulario
-
-router.post('/add/form', upImagesProducts.any(), controller.publicar) //añado ruta para guardar publicacion de producto
+router.get('/add',controller.agregar) //añado la ruta para mostrar el formulario
+router.post('/add', upImagesProducts.any(), controller.publicar) //añado ruta para guardar publicacion de producto
 
 // AGREGUÉ UN NUEVO PARAMETRO PARA EL MANEJO DE SOPAPAS!!
 router.get('/show/:id/:flap?', controller.show); //creo una ruta para mostrar los detalles del producto y editarlo

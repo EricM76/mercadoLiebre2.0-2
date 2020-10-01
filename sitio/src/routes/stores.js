@@ -15,7 +15,6 @@ const registerValidator = require('../validations/registerValidator'); //valido 
 const loginValidator = require('../validations/loginValidator'); //valido los datos ingresados en el formulario de logueo
 
 
-router.get('/preRegister',controller.preRegister)
 router.get('/register',controller.register)
 router.post('/register',upLogos.any(), registerValidator,controller.processRegister);
 

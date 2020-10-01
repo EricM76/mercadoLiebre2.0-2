@@ -1,5 +1,7 @@
 let dbProduct = require('../data/database') //requiero la base de datos de productos
 
+const db = require('../database/models')
+
 module.exports = { //exporto un objeto literal con todos los metodos
     index: function(req, res) {
   
@@ -16,6 +18,34 @@ module.exports = { //exporto un objeto literal con todos los metodos
             ofertas: ofertas,
             visitas: visitas
             //user: req.session.user
+        })
+    },
+    listCategories:function(req,res){
+        db.Categories.findAll()
+        .then(result => {
+            res.send(result)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    },
+    addCategorie:function(req,res){
+        res.render('categorieAdd',{
+            title: 'Añadir Categoria',
+            css: 'index.css',
+        })
+    },
+    saveCategorie:function(req,res){
+        db.Categories.create({
+            nombre:req.body.nombre.trim(),
+            imagen:(req.files[0])?req.files[0].filename:"categorie.png",
+        })
+        .then(result => {
+            console.log("Categoria añadida");
+            res.redirect('/admin/categorieList')
+        })
+        .catch(error => {
+            console.log(error)
         })
     }
 
