@@ -7,14 +7,11 @@ const dbCategories = require('../data/db_categories'); //requiero las categorias
 const {validationResult} = require('express-validator');
 const db = require('../database/models');
 
+const {Op} = require('sequelize');
+const { send } = require('process');
+
 module.exports = { //exporto un objeto literal con todos los metodos
     listar: function(req, res) {
-        /* res.render('products', {
-                title: "Todos los Productos",
-                css:'index.css',
-                productos: dbProducts
-            }) //muestra información de los productos */
-
             db.Stores.findOne({
                 where:{
                     id_usuario:req.session.user.id
@@ -40,25 +37,26 @@ module.exports = { //exporto un objeto literal con todos los metodos
            
     },
     search: function(req, res) {
-  
-        let errors = validationResult(req); //devuelve los errores del formSearch
-        
-        if(errors.isEmpty()){ //si no hay errores, es decir que la consulta no venga vacía
+        if(req.query.search == ""){
+            res.redirect('/')
+        }
+
         let buscar = req.query.search;
-        let productos = [];
-        dbProducts.forEach(producto => {
-            if (producto.name.toLowerCase().includes(buscar)) {
-                productos.push(producto)
-            }
+
+        db.Products.findAll()
+        .then(result => {
+            res.render('products', {
+                title: "Resultado de la búsqueda",
+                productos: result,
+                css:'index.css'
+            })
         })
-        res.render('products', {
-            title: "Resultado de la búsqueda",
-            productos: productos,
-            css:'index.css'
+        .catch(err => {
+            res.send(err)
         })
-    }else{
-        return res.redirect('/')
-    }
+       
+       
+   
     },
     detalle: function(req, res) {
 
@@ -74,20 +72,12 @@ module.exports = { //exporto un objeto literal con todos los metodos
             }) //muestra el detalle de un producto
     },
     agregar: function(req, res) {
-      /*   let categoria;
-        let sub;
-        if (req.query.categoria) {
-            categoria = req.query.categoria;
-            sub = req.query.sub;
-        }
-        res.render('productAdd', {
-                title: "Agregar Producto",
-                css:'product.css',
-                categorias: dbCategories,
-                categoria: categoria,
-                sub: sub
-            })  */
-            db.Categories.findAll()
+    
+            db.Categories.findAll({
+                order:[
+                    'nombre'
+                ]
+            })
             .then(categorias => {
                 res.render('productAdd', {
                     title: "Agregar Producto",
@@ -97,52 +87,63 @@ module.exports = { //exporto un objeto literal con todos los metodos
             })
     },
     publicar: function(req, res, next) {
-       /*  let lastID = 1;
-        dbProducts.forEach(producto => {
-            if (producto.id > lastID) {
-                lastID = producto.id
-            }
-        })
-        let newProduct = {
-            id: lastID + 1,
-            name: req.body.name,
-            price: Number(req.body.price),
-            discount: Number(req.body.discount),
-            category: req.body.category,
-            description: req.body.description,
-            image: (req.files[0]) ? req.files[0].filename : "default-image.png"
-        }
-        dbProducts.push(newProduct)
-        fs.writeFileSync(path.join(__dirname, "..", "data", "productsDataBase.json"), JSON.stringify(dbProducts), 'utf-8')
-        res.redirect('/products') */
-        db.Users.findOne({
-            where:{
-                id:req.session.user.id
-            },
-            include:[{association: "store"}]
-        })
-        .then(user => {
-            console.log(user)
-            db.Products.create({
-                nombre:req.body.nombre.trim(),
-                precio:Number(req.body.precio),
-                descuento:Number(req.body.descuento),
-                descripcion:req.body.descripcion,
-                imagenes:req.files[0].filename,
-                id_tienda:user.store.id,
-                id_categoria:Number(req.body.categoria)
+        let errores = validationResult(req);
+        if(errores.isEmpty()){
+
+            db.Users.findOne({
+                where:{
+                    id:req.session.user.id
+                },
+                include:[{association: "tienda"}]
             })
-            .then(result => {
-                console.log(result)
-                res.redirect('/')
+            .then(user => {
+                console.log(user)
+                db.Products.create({
+                    nombre:req.body.nombre.trim(),
+                    precio:Number(req.body.precio),
+                    descuento:Number(req.body.descuento),
+                    descripcion:req.body.descripcion,
+                    imagenes:req.files[0].filename,
+                    id_tienda:user.tienda.id,
+                    id_categoria:Number(req.body.categoria)
+                })
+                .then(result => {
+                    console.log(result)
+                    res.redirect('/')
+                })
+                .catch(err => {
+                    res.send(err)
+                })
             })
             .catch(err => {
                 res.send(err)
             })
-        })
-        .catch(err => {
-            res.send(err)
-        })
+        }else{
+            db.Categories.findAll({
+                order:[
+                    'nombre'
+                ]
+            })
+            .then(categorias => {
+                let oldCategoria;
+                if(req.body.categoria){
+                    categorias.forEach(categoria => {
+                        if(categoria.id == req.body.categoria){
+                            oldCategoria = categoria.nombre
+                        }
+                    });
+                }
+                res.render('productAdd', {
+                    title: "Agregar Producto",
+                    css:'product.css',
+                    categorias: categorias,
+                    errors: errores.mapped(),
+                    old:req.body,
+                    oldCategoria:oldCategoria
+                }) 
+            })
+        }
+
       
     },
     show: function(req, res) {

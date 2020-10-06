@@ -1,6 +1,7 @@
 let dbProduct = require('../data/database') //requiero la base de datos de productos
 
-const db = require('../database/models')
+const db = require('../database/models');
+const {validationResult} = require('express-validator');
 
 module.exports = { //exporto un objeto literal con todos los metodos
     index: function(req, res) {
@@ -22,31 +23,46 @@ module.exports = { //exporto un objeto literal con todos los metodos
     },
     listCategories:function(req,res){
         db.Categories.findAll()
-        .then(result => {
-            res.send(result)
+        .then(categorias => {
+            res.render('categoriesList',{
+                title: 'Lista de Categorias',
+                css: 'index.css',
+                categorias:categorias
+            })
+
         })
         .catch(error => {
             console.log(error)
         })
     },
     addCategorie:function(req,res){
-        res.render('categorieAdd',{
+        res.render('categoriesAdd',{
             title: 'Añadir Categoria',
             css: 'index.css',
         })
     },
     saveCategorie:function(req,res){
-        db.Categories.create({
-            nombre:req.body.nombre.trim(),
-            imagen:(req.files[0])?req.files[0].filename:"categorie.png",
-        })
-        .then(result => {
-            console.log("Categoria añadida");
-            res.redirect('/admin/categorieList')
-        })
-        .catch(error => {
-            console.log(error)
-        })
+        let errores = validationResult(req);
+        if(errores.isEmpty()){
+            db.Categories.create({
+                nombre:req.body.nombre.trim(),
+                imagen:(req.files[0])?req.files[0].filename:"categorie.png",
+            })
+            .then(result => {
+                console.log("Categoria añadida");
+                res.redirect('/admin/categorieList')
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }else{
+            res.render('categoriesAdd',{
+                title:'Añadir Categoria',
+                css:'index.css',
+                errors: errores.mapped(),
+                old:req.body
+            })
+        }
     }
 
 }

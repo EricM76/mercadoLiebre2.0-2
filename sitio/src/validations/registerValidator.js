@@ -20,14 +20,6 @@ module.exports = [
 
     body('email')
     .custom(function(value){
-        /* --------------------------------------------obsoleto
-        for(let i = 0; i<dbUsers.length;i++){
-            if(dbUsers[i].email == value){
-                return false
-            }
-        }
-        return true
-        --------------------------------------------------------*/
         return db.Users.findOne({
             where:{
                 email:value
@@ -71,6 +63,13 @@ module.exports = [
         }else{
             return true
         }
-    })
-    .withMessage("Solo se permite png, jpg, jpeg, gif")
+    }).withMessage("Solo se permite png, jpg, jpeg, gif")
+
+    /* .custom(req => {
+        if(!req.files[0]){
+            return false
+        }else{
+            return true
+        }
+    }).withMessage("Tenés que subir una imagen") */
 ]

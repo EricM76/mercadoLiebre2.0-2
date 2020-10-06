@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head') %>
+  <script src="/javascripts/productAdd.js"></script>
   <body>
     <%- include('partials/header') %>
 
@@ -17,11 +18,11 @@
               <div class="row py-3 px-5">
                 <div class="col-12 col-md-5 col-lg-6 col-xl-4 d-flex flex-column justify-content-center">
                   <figure>
-                  <img src="/images/logo-mercado-liebre.svg" alt="" class="w-75"/>
+                  <img id="vistaPrevia" src="" alt="" class="w-75"/>
                   </figure>
                 </div>
                 <div class="col-12 col-md-7 col-lg-6 col-xl-8 ">
-                  <form action="" method="POST" enctype="multipart/form-data">
+                  <form action="" method="POST" enctype="multipart/form-data" id="productAdd">
 
                     <div class="form-row">
 
@@ -30,16 +31,21 @@
                         <input type="text"
                         class="form-control <%= (typeof old != 'undefined' && old.nombre)?"is-valid":(typeof errors != 'undefined' && errors.nombre)?"is-invalid": ""  %>"
                         id="nombre"  name="nombre"  value="<%= (typeof old != 'undefined' && old.nombre)?old.nombre:'' %>" placeholder="nombre del producto"/>
-                        <small class="text-danger"><%= (typeof errors != 'undefined' && errors.nombre)?errors.nombre.msg: "" %> </small>
+                        <small id="errorNombre" class="text-danger"><%= (typeof errors != 'undefined' && errors.nombre)?errors.nombre.msg: "" %> </small>
                       </div>
 
                       <div class="form-group col-12 col-xl-6">
                         <label for="Titulo"></label>
-                        <select name="categoria" id="" class="form-control">
-                            <% categorias.forEach(categoria => { %>
-                                <option value="<%= categoria.id %>"><%= categoria.nombre %> </option>
-                            <% }) %>>
+                        <select name="categoria" id="categoria" class="form-control <%= (typeof old != 'undefined' && old.categoria)?"is-valid":(typeof errors != 'undefined' && errors.categoria)?"is-invalid": ""  %>">
+                          <option value="">Eligí la categoría</option>
+                          <% if (typeof oldCategoria != 'undefined') { %>
+                              <option value="<%= old.categoria %> " selected><%= oldCategoria %> </option>
+                          <% } %>
+                          <% categorias.forEach(categoria => { %>
+                              <option value="<%= categoria.id %>"><%= categoria.nombre %> </option>
+                          <% }) %>>
                         </select>
+                        <small id="errorCategoria" class="text-danger"><%= (typeof errors != 'undefined' && errors.categoria)?errors.categoria.msg: "" %> </small>
                       </div>
 
                     </div>
@@ -50,31 +56,31 @@
                         <label for="precio"></label>
                         <input type="number"
                         class="form-control <%= (typeof old != 'undefined' && old.precio && !errors.precio)?"is-valid":(typeof errors != 'undefined' && errors.precio)?"is-invalid": ""  %>"
-                        id="precio" value="<%= (typeof old != 'undefined' && old.precio)?old.precio:'' %>" placeholder="precio" name="precio"/>
-                        <small class="text-danger"><%= (typeof errors != 'undefined' && errors.precio)?errors.precio.msg: "" %> </small>
+                        id="precio" value="<%= (typeof old != 'undefined' && old.precio)?old.precio:'' %>" placeholder="precio" name="precio" min=1 />
+                        <small id="errorPrecio" class="text-danger"><%= (typeof errors != 'undefined' && errors.precio)?errors.precio.msg: "" %> </small>
                       </div>
 
                       <div class="form-group col-12 col-xl-6">
                         <label for="descuento"></label>
                         <input type="number"
                         class="form-control <%= (typeof old != 'undefined' && old.descuento && !errors.descuento)?"is-valid":(typeof errors != 'undefined' && errors.descuento)?"is-invalid": ""  %>"
-                        id="descuento" value="<%= (typeof old != 'undefined' && old.descuento)?old.descuento:'' %>" placeholder="descuento" name="descuento"/>
-                        <small class="text-danger"><%= (typeof errors != 'undefined' && errors.descuento)?errors.descuento.msg: "" %> </small>
+                        id="descuento" value="<%= (typeof old != 'undefined' && old.descuento)?old.descuento:'' %>" placeholder="descuento" name="descuento" min=1 />
+                        <small class="text-danger" id="errorDescuento"><%= (typeof errors != 'undefined' && errors.descuento)?errors.descuento.msg: "" %> </small>
                       </div>
 
                       <div class="form-group col-12">
                         <label for="descripcion"></label>
-                        <textarea name="descripcion" id="" cols="10" rows="5" class="form-control <%= (typeof old != 'undefined' && old.descripcion && !errors.descripcion)?"is-valid":(typeof errors != 'undefined' && errors.descripcion)?"is-invalid": ""  %>"><%= (typeof old != 'undefined' && old.descripcion)?old.descripcion:'' %></textarea>        
-                        <small class="text-danger"><%= (typeof errors != 'undefined' && errors.descripcion)?errors.descuento.msg: "" %> </small>
+                        <textarea name="descripcion" id="descripcion" cols="10" rows="5" class="form-control <%= (typeof old != 'undefined' && old.descripcion && !errors.descripcion)?"is-valid":(typeof errors != 'undefined' && errors.descripcion)?"is-invalid": ""  %>"><%= (typeof old != 'undefined' && old.descripcion)?old.descripcion:'' %></textarea>        
+                        <small id="errorDescripcion" class="text-danger"><%= (typeof errors != 'undefined' && errors.descripcion)?errors.descripcion.msg: "" %> </small>
                       </div>
                     </div>
                  
                     <div class="form-row">
                         <div class="form-group col-12 col-xl-6">
                             <div class="custom-file">
-                              <input type="file" class="custom-file-input " id="customFileLang" lang="en" name="avatar">
+                              <input type="file" class="custom-file-input " id="imagen" lang="en" name="imagen">
                               <label class="custom-file-label" for="customFileLang">Imagenes</label>
-                              <small class="text-danger"><%= (typeof errors != 'undefined' && errors.avatar)?errors.avatar.msg: "" %> </small>
+                              <small id="errorImagen" class="text-danger"><%= (typeof errors != 'undefined' && errors.imagen)?errors.imagen.msg: "" %> </small>
                             </div>
                           </div>
                         <div class="col-12 col-xl-6">
@@ -94,7 +100,7 @@
         </div>
       </section>
     </div>
-
+    
     <%- include('partials/footer') %>
   </body>
 </html>

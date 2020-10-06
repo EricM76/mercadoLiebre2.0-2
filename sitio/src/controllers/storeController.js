@@ -10,10 +10,10 @@ const path = require('path');
 
 module.exports = {
     register:function(req,res){
+      req.session.destroy();
       res.render('storeRegister',{
         title:"Registro de Tienda",
-        css:"register.css",
-        usuario:req.session.store
+        css:"register.css"
       })
     },
     processRegister: (req,res) => {
