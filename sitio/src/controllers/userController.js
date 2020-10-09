@@ -156,8 +156,8 @@ module.exports = {
                 fecha: req.body.fecha,
                 avatar:(req.files[0])?req.files[0].filename:req.session.user.avatar,
                 direccion: req.body.direccion.trim(),
-                ciudad:req.body.ciudad.trim(),
-                provincia:req.body.provincia.trim()
+                ciudad:req.body.ciudad,
+                provincia:req.body.provincia
             },
             {
                 where:{

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <%- include('partials/head') %>
+<script src="/javascripts/userProfile.js" ></script>
+
 <body>
   <%- include('partials/header') %>
   <div class="container">
@@ -67,14 +69,15 @@
                         </div>
                         <div class="form-group col-12 col-md-6">
                           <label for="imputCiudad">Ciudad</label>
-                          <input type="text" name="ciudad" class="form-control" id="imputCiudad" value="<%= usuario.ciudad %>">
-                          <!--<select class="form-control" name="ciudad" id="ciudadSelect" selected=<%= usuario.ciudad %> ></select>-->
+                          <input type="text" name="ciudad" class="form-control" id="inputCiudad" value="<%= usuario.ciudad %>">
+                          <select class="form-control" id="ciudadSelect" style="display: none;"></select>
 
                         </div>
                         <div class="form-group col-12 col-md-6">
                           <label for="inputProvincia">Provincia</label>
-                          <input type="text" name="provincia" class="form-control" id="imputCiudad" value="<%= usuario.provincia %>">
-                          <!--<select class="form-control" name="provincia" id="provinciaSelect" selected=<%= usuario.provincia %> ></select>-->
+                          <input type="text" name="provincia" class="form-control" id="inputProvincia" value="<%= usuario.provincia %>">
+                          <select class="form-control" id="provinciaSelect" style="display: none;">
+                          </select>
                         </div>
                       </div>
                       <div class="d-md-flex justify-content-end mt-5">
@@ -147,7 +150,6 @@
 
 
   <%- include('partials/footer') %>
-  <script src="/javascripts/userProfile.js" ></script>
 
 </body>
 

@@ -2,6 +2,8 @@
 window.addEventListener("load",function(){
   let provinciaSelect = document.querySelector('#provinciaSelect') //capto el select
   let ciudadSelect = document.querySelector('#ciudadSelect')
+  let inputProvincia = document.querySelector('#inputProvincia')
+  let inputCiudad = document.querySelector('#inputCiudad')
 
     /* ----------> VISTA PREVIA DE LA IMAGEN DE PERFIL < ------- */
     // ------------------------documentación -------------------//
@@ -21,51 +23,69 @@ window.addEventListener("load",function(){
         };
       }
 
+ // ----> cuanto el foco está puesto sobre el input, se oculta el input y se muestra el select con las provincias. Cuando se elige una, el select se oculta y queda el input con el valor designado
+      inputProvincia.addEventListener('focus',function(){
+        this.style.display = "none";
+        provinciaSelect.style.display = "block";
+ 
+
       /* ----------> APIS DE PROVINCIAS Y CIUDADES < ------- */
       fetch('https://apis.datos.gob.ar/georef/api/provincias')
       .then(function(response){
           return response.json();
       })
       .then(function(result){
+
+            for (let index = provinciaSelect.options.length; index>=0; index--) {
+              provinciaSelect.remove(index)
+            } //borro los items
+
             result.provincias.sort(function(prev,next){ //ordeno las provincias
               return prev.id - next.id
             })
+
+            provinciaSelect.innerHTML +=`<option>Seleccione su provincia... </option>`
+
             result.provincias.forEach(provincia => {
             provinciaSelect.innerHTML += `<option value=${provincia.id}> ${provincia.nombre} </option>` //agrego un option con el nombre de la provincia cargado
-        })
-      })
-
-      provinciaSelect.addEventListener('change',function(){
-        var selectedOption = this.options[provinciaSelect.selectedIndex]; //capto la opcion seleccionada
-     
-        //fetch('https://apis.datos.gob.ar/georef/api/municipios?max=2000') //departamentos
-        fetch('https://apis.datos.gob.ar/georef/api/localidades?max=1000&provincia='+selectedOption.value)
-        .then(response => {
-          return response.json();
-        })
-      /*   .then(result => {
-          result.municipios.forEach(municipio => {
-            if(municipio.provincia.id == selectedOption.value ){
-              console.log(selectedOption.value + ': ' + selectedOption.text);
-              ciudadSelect.innerHTML += `<option value=${municipio.id}> ${municipio.nombre} </option>` //agrego un option con el nombre de la provincia cargado
-
-            }
-          })
-        })
-      }) */
-      .then(result => {
-        console.log(result)
-        for(let i = ciudadSelect.options.length; i>=0; i--){
-          ciudadSelect.remove(i)
-        }
-        result.localidades.sort(function(prev,next){ //ordeno las localidades
-          return prev.nombre < next.nombre
-        })
-        result.localidades.forEach(localidad => {
-            ciudadSelect.innerHTML += `<option value=${localidad.id}> ${localidad.nombre} </option>` //agrego un option con el nombre de la provincia cargado
+        
+           })
+           provinciaSelect.addEventListener('change',function(){
+            this.style.display = "none";
+            inputProvincia.style.display = "block";
+            inputProvincia.value = this.options[provinciaSelect.selectedIndex].text
         })
       })
     })
 
-     
+// ----> cuanto el foco está puesto sobre el input, se oculta el input y se muestra el select con las localidades correpondientes con la provincia. Cuando se elige una, el select se oculta y queda el input con el valor designado
+      inputCiudad.addEventListener('focus',function(){
+        this.style.display = "none";
+        ciudadSelect.style.display = "block";
+        fetch('https://apis.datos.gob.ar/georef/api/localidades?max=1000&provincia='+inputProvincia.value)
+        .then(response => {
+          return response.json();
+        })
+        .then(result => {
+          for(let i = ciudadSelect.options.length; i>=0; i--){
+            ciudadSelect.remove(i)
+          } //borro los datos
+
+          result.localidades.sort(function(prev,next){ //ordeno las localidades
+            return prev.nombre > next.nombre
+          })
+
+          ciudadSelect.innerHTML +=`<option>Seleccione su localidad... </option>`
+
+          result.localidades.forEach(localidad => {
+              ciudadSelect.innerHTML += `<option value=${localidad.id}> ${localidad.nombre} </option>` //agrego un option con el nombre de la provincia cargado
+          })
+          ciudadSelect.addEventListener('change',function(){
+            this.style.display = "none";
+            inputCiudad.style.display = "block";
+            inputCiudad.value = this.options[ciudadSelect.selectedIndex].text
+        })
+        })
+      })
+
 })
