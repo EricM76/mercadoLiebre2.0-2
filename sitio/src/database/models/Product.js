@@ -12,7 +12,7 @@ module.exports = (sequelize,dataTypes) => {
             allowNull:false
         },
         precio:{
-            type:dataTypes.INTEGER(11),
+            type:dataTypes.DECIMAL(5,2),
             allowNull:false
         },
         descuento:{
@@ -44,15 +44,24 @@ module.exports = (sequelize,dataTypes) => {
     const Product = sequelize.define(alias,cols,config);
 
     Product.associate = function(models){
-        Product.belongsTo(models.Stores,{
+        
+        Product.belongsTo(models.Stores,{ //le pertenece a una tienda (relacion 1:1)
             as:"tienda",
             foreignKey:"id_tienda"
         })
-        Product.belongsTo(models.Categories,{
-            as:"categoria",
+        
+        Product.belongsTo(models.Categories,{ //le pertenece a una categoria (relacion N:1)
+            as : "categoria",
             foreignKey:"id_categoria"
         })
-     
+
+        Product.belongsToMany(models.Users,{ //le pertenece a muchos usuarios (relacion N:M)
+            as : 'usuarios',
+            through : 'carts',
+            foreignKey : 'id_producto',
+            otherKey : 'id_usuario',
+            timestamps : false
+        })
     }
 
     return Product;

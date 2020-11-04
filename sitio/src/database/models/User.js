@@ -60,10 +60,20 @@ module.exports = (sequelize, dataTypes) => {
         underscored:true
     }
     const User = sequelize.define(alias,cols,config);
+    
     User.associate = function(models){
-        User.hasOne(models.Stores,{
+
+        User.hasOne(models.Stores,{ //tiene una tienda (relación 1:1)
             as:"tienda",
             foreignKey:"id_usuario"
+        })
+
+        User.belongsToMany(models.Products,{ //tiene muchos productos (relacion N:M)
+            as : 'productos',
+            through : 'carts',
+            foreignKey : 'id_usuario',
+            otherKey : 'id_producto',
+            timestamps : false
         })
 
     }

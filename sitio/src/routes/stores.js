@@ -17,7 +17,7 @@ const loginValidator = require('../validations/loginValidator'); //valido los da
 
 router.get('/register',controller.register)
 router.post('/register',upLogos.any(), registerValidator,controller.processRegister);
-
+router.get('/login/:id',controller.login)
 router.get('/list',controller.list)
 
 module.exports = router;

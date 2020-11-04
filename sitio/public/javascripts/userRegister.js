@@ -78,18 +78,33 @@ window.addEventListener('load',function(){
         }
     })
 
-    inputAvatar.addEventListener('change',function(e){
 
-        let reader = new FileReader();
+    inputAvatar.addEventListener('change', function (e) {
+        let regExExtensions = /(.jpg|.jpeg|.png|.gif)$/i;
+        switch (true) {
+            case !regExExtensions.exec(this.value):
+                errorAvatar.innerHTML = "Solo imagenes con extension jpg, jpeg, png, o gif";
+                this.classList.add('is-invalid')
+                this.value = '';
+                vistaPrevia.src = "";
+                break
+            default:
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+                errorAvatar.innerHTML = "";
+                // Creamos el objeto de la clase FileReader
+                let reader = new FileReader();
+                // Leemos el archivo subido y se lo pasamos a nuestro fileReader
+                reader.readAsDataURL(e.target.files[0]);
+                // Le decimos que cuando este listo ejecute el código interno
+                reader.onload = function () {
+                    vistaPrevia.src = reader.result;
+                };
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+                errorAvatar.innerHTML = "";
+        }
 
-        reader.readAsDataURL(e.target.files[0]);
-
-        reader.onload = function(){
-                vistaPrevia.src = reader.result;
-                inputAvatar.classList.remove('is-invalid')
-                inputAvatar.classList.add('is-valid');
-                errorAvatar.innerHTML = ""
-        }      
     })
         
     inputPass.addEventListener('blur',function(){

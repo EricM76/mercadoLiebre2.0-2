@@ -20,19 +20,19 @@
                                 <div class="contenido">
 
                                     <figure>
-                                        <a href="products/detail/<%= producto.id %> "><img src="/images/products/<%- producto.image %>  " alt=" ">
+                                        <a href="products/detail/<%= producto.id %> "><img src="/images/products/<%- producto.imagenes %>  " alt=" ">
                                 </a>
                                     </figure>
 
                                     <article>
                                         <h2>$
-                                            <%- (producto.price - producto.price * producto.discount / 100).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %>
+                                            <%- (producto.precio - producto.precio * producto.descuento / 100).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %>
                                         </h2>
-                                        <% if (producto.discount != 0) { %>
-                                            <span><%- producto.discount %>% OFF</span>
+                                        <% if (producto.descuento != 0) { %>
+                                            <span><%- producto.descuento %>% OFF</span>
                                             <% } %>
                                                 <p>
-                                                    <%- producto.name %>
+                                                    <%- producto.nombre %>
                                                 </p>
                                                 <i class="fas fa-truck "></i>
                                     </article>

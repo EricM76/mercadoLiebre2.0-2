@@ -1,4 +1,3 @@
-const dbUsers = require('../data/dbUsers');
 const db = require('../database/models')
 
 const {check,validationResult,body} = require('express-validator');
@@ -15,43 +14,17 @@ module.exports = [
     })
     .withMessage('Escribe tu contraseña'),
     
-   /* body('email')
-    .custom(function(value){
-    
-    return db.Users.findOne({
-         where:{
-             email:value
-         }
-     })
-     .then(user => {
-         if(!user){
-             return Promise.reject('Email no registrado')
-         }
-     })
-    }), */
 
     body('pass')
     .custom((value,{req})=>{
-       /*  let result = true
-        dbUsers.forEach(user => {
-            if(user.email == req.body.email){
-                if(!bcrypt.compareSync(value,user.pass)){
-                    result = false
-                }
-            }
-        });
-        if (result == false){
-            return false
-        }else{
-            return true
-        } */
+       
         return db.Users.findOne({
             where:{
                 email:req.body.email
             }
         })
         .then(user => {
-            if(!bcrypt.compareSync(value,user.dataValues.password)){ //si no machea la contraseña
+            if(!bcrypt.compareSync(value,user.dataValues.password)){ 
                 return Promise.reject('estas mal')
             }
         })
@@ -59,5 +32,4 @@ module.exports = [
             return Promise.reject('Credenciales inválidas')
         })
     })
-    //.withMessage('Contraseña incorrecta')
 ]

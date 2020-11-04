@@ -9,6 +9,7 @@ const controller = require('../controllers/userController')
 
 /*****************MIDDLEWARES*********************/
 const upAvatares = require('../middlewares/upAvatares'); //requiero el modulo que se encarga de guardar el avatar, vía multer
+const sessionUserCheck = require('../middlewares/sessionUserCheck'); //chequeo si el usuario levantó sesión
 
 
 /*****************VALIDACIONES*********************/
@@ -25,10 +26,10 @@ router.post('/register',upAvatares.any(), registerValidator, controller.processR
 router.get('/login', controller.login); //formulario de logueo
 router.post('/login',loginValidator,controller.processLogin) //derivo al método que procesará el login
 
-router.get('/profile', controller.profile); //vista de perfil de usuario
+router.get('/profile',sessionUserCheck, controller.profile); //vista de perfil de usuario
 router.put('/updateProfile/:id',upAvatares.any(),controller.updateProfile) //actualizar datos
 router.delete('/delete/:id',controller.delete) //borrar el usuario
 
-router.get('/logout',controller.logout);
+router.get('/logout',sessionUserCheck,controller.logout);
 
 module.exports = router;

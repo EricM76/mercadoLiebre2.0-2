@@ -16,12 +16,16 @@
 
                     <div class="col-12 col-md-6 col-lg-3 col-xl-2">
 
-                        <div class="contenido p-3">
-                            <figure>
+                        <div class="contenido p-4">
+                            <figure class="p-3">
                                 <img src="/images/logos/<%= categoria.imagen %>  " alt=" ">
                             </figure>
-                            <span><%= categoria.nombre %> </span>           
+                            <h5><%= categoria.nombre %> </h5>
+                            <div class="d-flex justify-content-around">
+                                <a class="text-danger" href="">Eliminar</a>
+                            </div>
                         </div>
+                      
 
                     </div>
 

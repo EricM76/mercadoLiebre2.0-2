@@ -13,7 +13,8 @@ module.exports = {
       req.session.destroy();
       res.render('storeRegister',{
         title:"Registro de Tienda",
-        css:"register.css"
+        css:"register.css",
+        js : 'storeRegister.js'
       })
     },
     processRegister: (req,res) => {
@@ -45,13 +46,40 @@ module.exports = {
     })
      
   },
+  login : function(req,res){
+    db.Stores.findOne({
+      where : {
+        id : req.params.id
+      },
+      include : [
+       {
+         association : 'responsable'
+       }
+      ]
+    })
+    .then(tienda => {
+      let old = {
+        email : tienda.responsable.email
+      }
+      res.render('userLogin',{
+        title: "Login de Usuario",
+        css : "index.css",
+        old : old
+      })
+    })
+  
+  },
   list:function(req,res){
     db.Stores.findAll({
       include:[{association: "responsable"}]
     }
     )
     .then(tiendas => {
-      res.send(tiendas)
+      res.render('stores',{
+        title : "Tiendas Registradas",
+        css : 'index.css',
+        stores : tiendas
+      })
     })
     .catch(err => {
       res.send(err)
