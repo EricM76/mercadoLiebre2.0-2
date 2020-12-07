@@ -48,13 +48,14 @@
                             <i class="fas fa-store"></i>  Tiendas oficiales
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="/stores/register">Registrarse</a>
+                            <% if (typeof user == "undefined" || user.rol != "store") { %>
+
+                          <a class="dropdown-item" href="/stores/register">Registrar Tienda</a>
                           <a class="dropdown-item" href="/stores/list">Ver tiendas</a>
-                        
-                            <% if (typeof user != "undefined" && user.rol=="store") { %>
-                                <div class="dropdown-divider"></div>
+                          <% }else if(typeof user != "undefined" && user.rol=="store"){ %>
+                                <!-- <div class="dropdown-divider"></div> -->
                                 <a class="dropdown-item" href="/products/add">Publicar productos</a>
-                                <a class="dropdown-item" href="/products/list">Listar productos</a>
+                                <a class="dropdown-item" href="/stores/products">Listar productos</a>
 
                             <% } %>
                         </div>

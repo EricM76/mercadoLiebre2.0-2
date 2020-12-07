@@ -33,8 +33,7 @@ module.exports = (sequelize, dataTypes) => {
         })
         Store.hasMany(models.Products,{
             as:"productos",
-            foreingKey:"id_tienda"
-            
+            foreingKey:"store_id"
         })
     }
 

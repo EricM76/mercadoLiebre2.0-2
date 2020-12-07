@@ -12,11 +12,8 @@
                 <div class="col-12 col-md-6 col-lg-4 col-xl-3">
 
                     <div class="contenido p-4">
-                        <%= store.nombre %>
-                        <img src="/images/logos/<%= store.logo %> " alt="">
-                        <div>
-                            <button class="btn btn-warning"><a href="/stores/login/<%= store.id %> ">Ingresar</a> </button>
-                        </div>
+                      <a href="/stores/login/<%= store.id %>"> <img src="/images/logos/<%= store.logo %> " alt=""></a> 
+                       
                     </div>
                    
                 </div>

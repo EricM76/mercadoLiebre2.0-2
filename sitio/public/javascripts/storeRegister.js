@@ -31,6 +31,8 @@ window.addEventListener('load', () => {
                 // Le decimos que cuando este listo ejecute el código interno
                 reader.onload = function () {
                     vistaPrevia.src = reader.result;
+                    labelLogo.innerText = e.target.files[0].name
+                    console.log()
                 };
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
@@ -172,15 +174,18 @@ window.addEventListener('load', () => {
         checkBases.classList.toggle('is-valid');
         checkBases.classList.remove('is-invalid');
         errorBases.innerHTML = ""
+        msgError.innerHTML = ""
     })
 
     formRegister.addEventListener('submit', function (event) {
         event.preventDefault();
+        let error = false
+
         if (checkBases.checked == false) {
             checkBases.classList.add('is-invalid');
             errorBases.innerHTML = "Debes aceptar las bases y condiciones"
+            error = true
         }
-        let error = false
         for (let index = 0; index < elementos.length - 1; index++) {
             if (elementos[index].value == 0) {
                 elementos[index].classList.add('is-invalid');

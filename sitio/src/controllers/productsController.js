@@ -10,7 +10,8 @@ const {
 const db = require('../database/models');
 
 const {
-    Op
+    Op,
+    where
 } = require('sequelize');
 const {
     send
@@ -69,7 +70,6 @@ module.exports = { //exporto un objeto literal con todos los metodos
 
     },
     detalle: function (req, res) {
-
         db.Products.findOne({
                 where: {
                     id: req.params.id
@@ -79,11 +79,10 @@ module.exports = { //exporto un objeto literal con todos los metodos
                 res.render('productDetail', {
                     title: "Detalle del Producto",
                     css: 'product.css',
-                    id: id,
-                    producto: producto
+                    producto: producto,
                 })
             })
-            .catch(error => req.send(error))
+            .catch(error => console.log(error))
 
     },
     agregar: function (req, res) {
@@ -97,13 +96,12 @@ module.exports = { //exporto un objeto literal con todos los metodos
                 res.render('productAdd', {
                     title: "Agregar Producto",
                     css: 'product.css',
-                    js : 'productAdd.js',
+                    js: 'productAdd.js',
                     categorias: categorias
                 })
             })
     },
     publicar: function (req, res, next) {
-        return res.send(req.body)
         let errores = validationResult(req);
         if (errores.isEmpty()) {
 
@@ -116,19 +114,18 @@ module.exports = { //exporto un objeto literal con todos los metodos
                     }]
                 })
                 .then(user => {
-                    console.log(user)
                     db.Products.create({
                             nombre: req.body.nombre.trim(),
-                            precio: Number(req.body.precio).toFixed(2),
+                            precio: parseFloat(req.body.precio).toFixed(2),
                             descuento: Number(req.body.descuento),
                             descripcion: req.body.descripcion,
                             imagenes: req.files[0].filename,
-                            id_tienda: user.tienda.id,
+                            store_id: user.tienda.id,
                             id_categoria: Number(req.body.categoria)
                         })
                         .then(result => {
                             console.log(result)
-                            res.redirect('/')
+                            res.redirect('/stores/products')
                         })
                         .catch(err => {
                             res.send(err)
@@ -156,7 +153,7 @@ module.exports = { //exporto un objeto literal con todos los metodos
                         title: "Agregar Producto",
                         css: 'product.css',
                         categorias: categorias,
-                        js : 'productAdd.js',
+                        js: 'productAdd.js',
                         errors: errores.mapped(),
                         old: req.body,
                         oldCategoria: oldCategoria
@@ -167,7 +164,6 @@ module.exports = { //exporto un objeto literal con todos los metodos
 
     },
     show: function (req, res) {
-        let idProducto = req.params.id;
 
         // AGREGUÉ LA LOGICA PARA DETERMINAR QUE SOLAPA SE MUESTRA EN FUNCIÓN DEL VALOR DEL PARAMETRO :flap
         //***********************************************************************************
@@ -184,41 +180,104 @@ module.exports = { //exporto un objeto literal con todos los metodos
             showEdit = "show";
         }
         //***********************************************************************************
-
-        let resultado = dbProducts.filter(producto => {
-            return producto.id == idProducto
+        let producto = db.Products.findOne({
+            where: {
+                id: req.params.id
+            },
+            include: [{
+                    association: "categoria"
+                },
+                {
+                    association: "subcategoria"
+                }
+            ]
         })
-        res.render('productShow', {
-            title: "Ver / Editar Producto",
-            css: 'product.css',
-            total: dbProducts.length,
-            producto: resultado[0],
-            categorias: dbCategories,
-            //envío las variables correspondientes para ser usadas en la vista
-            activeEdit: activeEdit,
-            activeDetail: activeDetail,
-            showEdit: showEdit,
-            showDetail: showDetail
+        let categorias = db.Categories.findAll()
 
-        })
 
+        Promise.all([producto, categorias])
+            .then(([producto, categorias]) => {
+                res.render('productShow', {
+                    title: "Ver / Editar Producto",
+                    css: 'product.css',
+                    js: 'productEdit.js',
+                    producto: producto,
+                    categorias: categorias,
+                    //envío las variables correspondientes para ser usadas en la vista
+                    activeEdit: activeEdit,
+                    activeDetail: activeDetail,
+                    showEdit: showEdit,
+                    showDetail: showDetail
+
+                })
+            })
+            .catch(error => res.send(error))
     },
-    editar: function (req, res, next) {
-        let idProducto = req.body.id;
-        dbProducts.forEach(producto => {
-            if (producto.id == idProducto) {
-                producto.id = Number(req.body.id);
-                producto.name = req.body.name.trim();
-                producto.price = Number(req.body.price);
-                producto.discount = Number(req.body.discount);
-                producto.category = req.body.category.trim();
-                producto.description = req.body.description.trim();
-                producto.image = (req.files[0]) ? req.files[0].filename : producto.image
-            }
-        })
+    editar: function (req, res) {
+        let errores = validationResult(req);
+        if (errores.isEmpty()) {
 
-        fs.writeFileSync(path.join(__dirname, '../data/productsDataBase.json'), JSON.stringify(dbProducts))
-        res.redirect('/products/show/' + idProducto + '/show')
+            db.Users.findOne({
+                where: {
+                    id: req.session.user.id
+                },
+                include: [{
+                    association: "tienda"
+                }]
+            })
+            .then(user => {
+            db.Products.update({
+                    nombre: req.body.nombre.trim(),
+                    precio: parseFloat(req.body.precio).toFixed(2),
+                    descuento: Number(req.body.descuento),
+                    descripcion: req.body.descripcion,
+                    imagenes: req.files[0] ? req.files[0].filename : req.body.imagenOriginal,
+                    store_id: user.tienda.id,
+                    id_categoria: Number(req.body.categoria),
+                    id_subcategoria: Number(req.body.subcategoria)
+                }, {
+                    where: {
+                        id: req.params.id
+                    }
+                })
+                .then(() => res.redirect('/products/show/' + req.params.id + '/show'))
+            })
+            .catch(error => res.send(error))
+        } else {
+
+            let producto = db.Products.findOne({
+                where: {
+                    id: req.params.id
+                },
+                include: [{
+                    association: "categoria"
+                },
+                {
+                    association: "subcategoria"
+                }
+            ]
+            })
+            let categorias = db.Categories.findAll()
+
+
+            Promise.all([producto, categorias])
+                .then(([producto, categorias]) => {
+                    res.render('productShow', {
+                        title: "Ver / Editar Producto",
+                        css: 'product.css',
+                        js: 'productEdit.js',
+                        producto: producto,
+                        categorias: categorias,
+                        //envío las variables correspondientes para ser usadas en la vista
+                        activeEdit: "active",
+                        activeDetail: "",
+                        showEdit: "show",
+                        showDetail: "",
+                        old: req.body
+                    })
+                })
+                .catch(error => res.send(error))
+        }
     },
     eliminar: function (req, res) {
         let idProducto = req.params.id;

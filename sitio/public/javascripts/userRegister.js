@@ -18,6 +18,7 @@ window.addEventListener('load',function(){
     let inputPass = qs('#pass');
     let inputPass2 = qs('#pass2');
     let checkBases = qs('.custom-control-input');
+    let labelAvatar = qs('#labelAvatar');
 
     let regExEmail =  /^(([^<>()\[\]\.,;:\s@\”]+(\.[^<>()\[\]\.,;:\s@\”]:+)*)|(\”.+\”))@(([^<>()[\]\.,;:\s@\”]+\.)+[^<>()[\]\.,;:\s@\”]{2,})$/;
 
@@ -92,14 +93,12 @@ window.addEventListener('load',function(){
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
                 errorAvatar.innerHTML = "";
-                // Creamos el objeto de la clase FileReader
-                let reader = new FileReader();
-                // Leemos el archivo subido y se lo pasamos a nuestro fileReader
-                reader.readAsDataURL(e.target.files[0]);
-                // Le decimos que cuando este listo ejecute el código interno
+                let reader = new FileReader();// Creamos el objeto de la clase FileReader
+                reader.readAsDataURL(e.target.files[0]); // Leemos el archivo subido y se lo pasamos a nuestro fileReader
                 reader.onload = function () {
                     vistaPrevia.src = reader.result;
-                };
+                    labelAvatar.innerText = e.target.files[0].name
+                };  // Le decimos que cuando este listo ejecute el código interno
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
                 errorAvatar.innerHTML = "";
@@ -156,11 +155,14 @@ window.addEventListener('load',function(){
 
     formRegister.addEventListener('submit',function(event){
         event.preventDefault();
+        let error = false
+
         if(checkBases.checked == false){
             checkBases.classList.add('is-invalid');
             errorBases.innerHTML = "Debes aceptar las bases y condiciones"
+            error = true
+
         }
-        let error = false
         for (let index = 0; index < elementos.length-1; index++) {
             if(elementos[index].value == 0){
                 elementos[index].classList.add('is-invalid');

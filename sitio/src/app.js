@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 const methodOverride = require('method-override'); //requiero el paquete Method Override para usar los metodos PUT, PATH y DELETE
 const session = require('express-session'); //requiero express-session
+const cookieCheck = require('./middlewares/cookieCheck');
+
 const localsCheck = require('./middlewares/localsUserCheck'); //requiero el modulo que asigna el valor de session a la variable locals
 
 var indexRouter = require('./routes/index');
@@ -29,6 +31,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(methodOverride('_method')) //configuro el uso de method Override
 app.use(session({secret:"mercadoLiebreForEver"})) //configuro el uso de session
 app.use(localsCheck); //asigno la variable session a la variable locals
+app.use(cookieCheck)
 
 app.use(function(req,res,next){
     req.session.urlAnterior = req.originalUrl;

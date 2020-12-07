@@ -135,11 +135,8 @@ module.exports = {
                 res.render('userProfile', {
                     title: "Perfil de usuario",
                     css:"profile.css",
-                    js : 'userProfile',
+                    js : 'userProfile.js',
                     usuario:user,
-                    productos: dbProductos.filter(producto => {
-                        return producto.category != "visited" & producto.category != "in-sale"
-                    })
                 })
             })
         }else{
@@ -168,7 +165,7 @@ module.exports = {
                 }
             }
         )
-        .then( result => {
+        .then( () => {
           console.log(req.session.user)
 
           return res.redirect('/users/profile')

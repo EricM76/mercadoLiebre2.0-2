@@ -15,9 +15,11 @@ const registerValidator = require('../validations/registerValidator'); //valido 
 const loginValidator = require('../validations/loginValidator'); //valido los datos ingresados en el formulario de logueo
 
 
-router.get('/register',controller.register)
+router.get('/register',controller.register);
 router.post('/register',upLogos.any(), registerValidator,controller.processRegister);
-router.get('/login/:id',controller.login)
-router.get('/list',controller.list)
+router.get('/login/:id',controller.login);
+router.get('/list',controller.list);
+router.get('/products',controller.productos);
+
 
 module.exports = router;

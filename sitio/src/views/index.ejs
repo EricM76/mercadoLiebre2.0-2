@@ -4,9 +4,14 @@
 
 <body>
     <%- include('partials/header') %>
-    <section class="banner ">
-        <img src="images/img-home-banner.jpg " alt=" ">
-    </section>
+    <% if (typeof user == 'undefined') { %>
+        <section class="banner d-flex justify-content-center">
+            <img src="images/logoPrincipal.png " alt=" " class="w-75 p-5" style="height: 75vh;">
+        </section>
+    <% }else if(user.rol == 'user'){ %>
+        <section class="banner ">
+            <img src="images/img-home-banner.jpg " alt=" ">
+        </section>
     <div class="container py-5">
         <section>
             <div class="row productos">
@@ -40,6 +45,40 @@
             </div>
         </section>
     </div>
+    <% } else if(user.rol == "admin") {%>
+        <section class="banner p-5 d-flex justify-content-center" style="height: 75vh;">
+            <img src="images/adminLogo.png " alt=" " class="w-100" >
+        </section>
+    <% }else if(user.rol == "store"){ %>
+    <div class="container py-5">
+        <section>
+            <div class="row productos">
+                <% productos.forEach(producto => { %>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="contenido">
+                        <figure>
+                            <a href="./products/show/<%= producto.id %> "><img
+                                    src="/images/products/<%- producto.imagenes %>  " alt=" "></a>
+                        </figure>
+                        <article>
+                            <h2>$
+                                <%- (producto.precio * producto.descuento / 100).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %>
+                            </h2>
+                            <% if (producto.descuento != 0) { %>
+                            <span><%- producto.descuento %>% OFF</span>
+                            <% } %>
+                            <p>
+                                <%- producto.nombre %>
+                            </p>
+                            <i class="fas fa-truck "></i>
+                        </article>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+        </section>
+    </div>
+    <% } %>
     <%- include('partials/footer') %>
 </body>
 

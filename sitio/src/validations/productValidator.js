@@ -11,7 +11,7 @@ module.exports = [
     .withMessage('El nombre del producto es obligatorio'),
 
     check('precio')
-    .isInt({
+    .isDecimal({
         min:1
     }).withMessage('El producto debe tener un precio válido'),
 

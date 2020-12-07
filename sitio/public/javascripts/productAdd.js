@@ -13,11 +13,35 @@ window.addEventListener('load',function(){
     let vistaPrevia = qs('#vistaPrevia');
    
     let inputNombre = qs('#nombre');
-    let selectCategoria = qs('#categoria');
     let inputPrecio = qs('#precio');
     let inputDescuento = qs('#descuento');
     let textDescripcion = qs('#descripcion');
     let inputImagen = qs('#imagen');
+    let selectCategoria = qs('#selectCategoria')
+    let selectSub = qs('#selectSub');
+
+    function ordenarAsc(p_array_json, p_key) {
+        p_array_json.sort(function (a, b) {
+           return a[p_key] > b[p_key];
+        });
+     }
+
+    let subcategorias = function(idCategoria){
+        selectSub.innerHTML = ""
+        fetch(`${window.location.origin}/api/subcategorias/${idCategoria}`)
+        .then(response => response.json())
+        .then(subcategorias => {
+
+           ordenarAsc(subcategorias,'nombre')
+
+            subcategorias.forEach(subcategoria => {
+                selectSub.innerHTML +=
+                  `<option value="${subcategoria.id}">${subcategoria.nombre}</option>`
+            });
+        })
+    }
+
+
 
 
     inputNombre.addEventListener('blur',function(){
@@ -87,23 +111,22 @@ window.addEventListener('load',function(){
     })
 
     inputImagen.addEventListener('change',function(e){
-        // Creamos el objeto de la clase FileReader
         let reader = new FileReader();
 
-        // Leemos el archivo subido y se lo pasamos a nuestro fileReader
         reader.readAsDataURL(e.target.files[0]);
 
-        // Le decimos que cuando este listo ejecute el código interno
         reader.onload = function(){
           vistaPrevia.src = reader.result;
+          labelImagen.innerHTML = e.files[0].name
         };
         this.classList.remove('is-invalid');
         this.classList.add('is-valid');
         errorImagen.innerHTML = "";
 })
 
-
-
+    selectCategoria.addEventListener('change',()=>{
+        subcategorias(selectCategoria.value)
+        })
     
 
 

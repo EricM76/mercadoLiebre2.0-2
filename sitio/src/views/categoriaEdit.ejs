@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+<body>
+    <%- include('partials/header') %>
+
+    <div class="container" style="height: 75vh;">
+        <section>
+            <div class="row productos">
+                <div class="titulo col-12">
+                    <h2>
+                        <%= title %>
+                    </h2>
+                </div>
+
+                <div class=" col-12 contenido p-4">
+                        
+                        <div class="form-row">
+
+                            <div class="col-12 col-md-3 d-flex align-items-center justify-content-center">
+                                
+                                <img id="imgLogo" src="/images/logos/<%= categoria.imagen %> " alt="" width="100px">
+                                <div class="custom-file" style="display: none;">
+                                    <input name="newLogo" type="file" class="custom-file-input" id="customFile">
+                                    <label class="custom-file-label" for="customFile">Elija el logo</label>
+                                    <button type="button" id="btnCancel" class="btn-sm btn-danger mt-2">Cancelar</button>
+                                </div>
+                                
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <form id="formCategoria" action="/admin/categorieEdit/<%= categoria.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+
+                                <label for="">Categoria</label>
+                                <input name="nombre" type="text" class="form-control" value="<%= categoria.nombre %> ">
+                                <span id="errorLogo"></span>
+                                <div class="mt-4">
+                                    <a href="/admin/categorieDelete/<%= categoria.id %> "> <button class="btn-sm btn-danger">Eliminar</button></a>
+                                    <a href="/admin/categorieList"> <button class="btn-sm btn-secondary">Volver</button></a>
+                                    <button name="oldLogo" type="submit" value="<%= categoria.imagen %> "
+                                        class="btn-sm btn-primary">Guardar</button>
+                                </div>
+                            </form>
+
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <form action="/admin/subAdd" method="POST">
+                                    <label for="">Subcategorias</label>
+                                    <select class="form-control" name="subcategoria" id="selectSub">
+                                        <% categoria.subcategorias.forEach(sub => { %>
+                                            <option class="sub" value="<%= sub.id %>"><%= sub.nombre %></option>
+                                        <% }) %>
+                                    </select>
+                                    <input name="nombre" class="form-control" id="inputSub" type="text" style="display: none;">
+                                    <div class="mt-4">
+                                        <button type="button" id="btnEliminarSub" class="btn-sm btn-danger">Eliminar</button>
+                                        <button type="button" id="btnAgregarSub" class="btn-sm btn-success">Agregar</button>
+                                        <button type="button" id="btnCancelSub" class="btn-sm btn-secondary" style="display: none;">Cancelar</button>
+                                        <button name="idCategoria" value="<%= categoria.id %>" type="submit" id="btnGuardarSub" class="btn-sm btn-primary" style="display: none;">Guardar</button>
+    
+                                    </div>
+                                </form>
+                                
+                              
+                            </div>
+
+                           
+                        </div>
+                   
+                </div>
+
+            </div>
+        </section>
+    </div>
+    <%- include('partials/footer') %>
+</body>
+
+</html>
